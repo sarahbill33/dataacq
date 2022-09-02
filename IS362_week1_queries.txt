@@ -1,0 +1,86 @@
+1A.How many airplanes have listed speeds? 
+
+--> Answer: 23
+
+SELECT manufacturer, model, speed
+FROM planes
+WHERE speed IS NOT NULL
+
+1B.What is the minimum listed speed and the maximum listed speed?
+
+--> Answer: Min is 90, Max is 432
+
+SELECT manufacturer, model, MIN(speed), MAX(speed)
+FROM planes
+WHERE speed IS NOT NULL
+
+2A.What is the total distance flown by all of the planes in
+January 2013? 
+
+--> Answer: 27,188,805
+
+SELECT SUM(distance)
+FROM flights
+WHERE year = 2013
+AND month = 1
+
+2B.What is the total distance flown by all of
+the planes in January 2013 where the tailnum is
+missing?
+
+--> Answer: 81,763
+
+SELECT SUM(distance)
+FROM flights
+WHERE year = 2013
+AND month = 1
+AND tailnum = ""
+
+
+3A. What is the total distance flown for all planes on July 5,
+2013 grouped by aircraft manufacturer? Write this
+statement first using an INNER JOIN
+
+--> Answer: 755,337
+
+SELECT planes.manufacturer, SUM(flights.distance)
+FROM flights
+INNER JOIN planes ON flights.tailnum = planes.tailnum
+WHERE flights.year = 2013
+AND flights.month = 7
+AND flights.day = 5
+GROUP BY planes.manufacturer WITH ROLLUP
+
+
+3B.then using a LEFT
+OUTER JOIN. 
+
+--> Answer: 883,008
+
+SELECT planes.manufacturer, SUM(flights.distance)
+FROM flights
+LEFT OUTER JOIN planes ON flights.tailnum = planes.tailnum
+WHERE flights.year = 2013
+AND flights.month = 7
+AND flights.day = 5
+GROUP BY planes.manufacturer WITH ROLLUP
+
+
+3C.How do your results compare?
+
+--> Answer: The left outer join included null value manufacturers, and therefore reported a higher number
+
+4. Write and answer at least one question of your own
+choosing that joins information from at least three of
+the tables in the flights database.
+
+Question: Which airport had the most originating flights for Boeng planes in 2013?
+
+Answer --> Newark Liberty International
+
+SELECT airports.name, COUNT(flights.flight)
+FROM flights
+JOIN planes ON flights.tailnum = planes.tailnum
+JOIN airports ON airports.faa = flights.origin
+WHERE planes.manufacturer = "BOEING"
+GROUP BY airports.name
